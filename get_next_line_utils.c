@@ -6,7 +6,7 @@
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:32:55 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/22 21:38:32 by ted-dafi         ###   ########.fr       */
+/*   Updated: 2021/11/23 23:55:22 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ char	*ft_strjoin(char *s1, char const *s2)
 	size_t		j;
 	size_t		k;
 
+	if(!s2)
+		return (NULL);
 	j = ft_strlen(s1);
 	k = ft_strlen(s2);
 	s3 = (char *)malloc(j + k + 1);

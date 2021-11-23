@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gyseven <gyseven@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:40:24 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/23 10:52:30 by gyseven          ###   ########.fr       */
+/*   Updated: 2021/11/23 23:58:47 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,27 +32,35 @@ char	*ft_substr(char *start, size_t len)
 	p[i] = '\0';
 	return (p);
 }
-char *just_do_it(int fd, char **b, char *line, int re)
+char *just_do_it(int fd, char **b, char *line)
 {
 	char	*i;
 	char	*f;
+	int		re;
 
+	re = read(fd, *b, BUFFER_SIZE);
+	if (re)
+		(*b)[re] = '\0';
+	line = ft_strjoin(line, *b);
 	i = ft_strchr(*b, '\n');
-	if (i)
+	while(re && !i)
 	{
+		re = read(fd, *b, BUFFER_SIZE);
+		if (re)
+			(*b)[re] = '\0';
+		i = ft_strchr(*b, '\n');
 		line = ft_strjoin(line, *b);
-		*b = ft_substr(*b, i - *b);
-		f = ft_substr(line, ft_strchr(line, '\n') - line);
+	}
+	if(i)
+	{
+		f = ft_substr(line, ft_strchr(line, '\n') - line + 1);
+		*b = i + 1;
 		free(line);
 		return (f);
 	}
-	else if (re)
-		{
-			re = read(fd, *b, BUFFER_SIZE);
-			if(re)
-				(*b)[re] = '\0';
-			line = ft_strjoin(line, *b);
-		}
+	else
+		*b = NULL;
+		return(line);
 }
 char *get_next_line(int fd)
 {
@@ -67,12 +75,17 @@ char *get_next_line(int fd)
 		b = (char *)malloc(sizeof(char) * (BUFFER_SIZE));
 		if (!b)
 			return (NULL);
-		re = read(fd, b, BUFFER_SIZE);
-		if (re)
-			b[re] = '\0';
-		else
-			return (NULL);
 	}
 	line = ft_strdup("");
-	return(just_do_it(fd, &b, line, re));
+	return(just_do_it(fd, &b, line));
+}
+#include <stdio.h>
+#include <string.h>
+int	main()
+{
+	int fd = open("foo.txt", O_CREAT);
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
 }
