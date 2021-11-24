@@ -6,7 +6,7 @@
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:40:24 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/24 22:10:53 by ted-dafi         ###   ########.fr       */
+/*   Updated: 2021/11/24 22:25:51 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ char *just_do_it(int fd, char **b, char *line)
 	}
 	if(i)
 	{
-		f = ft_substr(line, line, ft_strchr(line, '\n') - line + 1);
+		f = ft_substr(line, line, ft_strchr(line, '\n') - line);
 		ft_strlcpy(*b, i + 1,  ft_strchr(*b, '\0') - i);
 		free(line);
 		return (f);
@@ -86,7 +86,8 @@ char *get_next_line(int fd)
 		if(m)
 		{
 			f = ft_substr(line, line, ft_strchr(line, '\n') - line + 1);
-			b = ft_substr(b, b, ft_strchr(line, '\0') - ft_strchr(line, '\n') + 1);
+			b = ft_substr(line, ft_strchr(line, '\n'), ft_strchr(line, '\0') - ft_strchr(line, '\n') + 1);
+			return (f);
 		}
 		else
 		{
