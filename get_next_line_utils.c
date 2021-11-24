@@ -6,7 +6,7 @@
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:32:55 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/23 23:55:22 by ted-dafi         ###   ########.fr       */
+/*   Updated: 2021/11/24 21:37:50 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ size_t	ft_strlcpy(char *dest, const char *src, size_t size)
 	size_t	i;
 
 	i = 0;
-	if (size != 0)
+	while(i < size - 1)
 	{
 		while (i < size - 1 && src[i] != '\0')
 		{
@@ -61,7 +61,7 @@ size_t	ft_strlcpy(char *dest, const char *src, size_t size)
 	return (ft_strlen(src));
 }
 
-char	*ft_strjoin(char *s1, char const *s2)
+char	*ft_strjoin(const char *s1, char *s2)
 {
 	char		*s3;
 	size_t		j;
@@ -69,14 +69,16 @@ char	*ft_strjoin(char *s1, char const *s2)
 
 	if(!s2)
 		return (NULL);
+	if(!s1)
+		return(s2);
 	j = ft_strlen(s1);
 	k = ft_strlen(s2);
 	s3 = (char *)malloc(j + k + 1);
 	if (!s3)
 		return (NULL);
 	ft_strlcpy(s3, s1, j + 1);
-	free(s1);
 	ft_strlcpy(s3 + j, s2, k + 1);
+	free(s2);
 	return (s3);
 }
 

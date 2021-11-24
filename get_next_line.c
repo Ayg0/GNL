@@ -6,14 +6,14 @@
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:40:24 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/23 23:58:47 by ted-dafi         ###   ########.fr       */
+/*   Updated: 2021/11/24 22:10:53 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <fcntl.h>
 
-char	*ft_substr(char *start, size_t len)
+char	*ft_substr(char *fr, char *start, size_t len)
 {
 	char	*p;
 	size_t	i;
@@ -38,6 +38,7 @@ char *just_do_it(int fd, char **b, char *line)
 	char	*f;
 	int		re;
 
+	line = ft_strjoin(line, *b);
 	re = read(fd, *b, BUFFER_SIZE);
 	if (re)
 		(*b)[re] = '\0';
@@ -53,8 +54,8 @@ char *just_do_it(int fd, char **b, char *line)
 	}
 	if(i)
 	{
-		f = ft_substr(line, ft_strchr(line, '\n') - line + 1);
-		*b = i + 1;
+		f = ft_substr(line, line, ft_strchr(line, '\n') - line + 1);
+		ft_strlcpy(*b, i + 1,  ft_strchr(*b, '\0') - i);
 		free(line);
 		return (f);
 	}
@@ -67,24 +68,39 @@ char *get_next_line(int fd)
 	static char	*b;
 	char		*line;
 	int			re;
+	char		*m;
+	char		*n;
+	char		*f;
 
 	if(fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if(!b)
+	line = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+	if (!line)
+		return  (NULL);	
+	re = read(fd, line, BUFFER_SIZE);
+	line = ft_strjoin(b, line);
+	while (re || *b)
 	{
-		b = (char *)malloc(sizeof(char) * (BUFFER_SIZE));
-		if (!b)
-			return (NULL);
+		if (b)
+			m = ft_strchr(b, '\n');
+		if(m)
+		{
+			f = ft_substr(line, line, ft_strchr(line, '\n') - line + 1);
+			b = ft_substr(b, b, ft_strchr(line, '\0') - ft_strchr(line, '\n') + 1);
+		}
+		else
+		{
+			re = read(fd, line, BUFFER_SIZE);
+			line = ft_strjoin(b, line);
+		}
 	}
-	line = ft_strdup("");
-	return(just_do_it(fd, &b, line));
+	return (f);
 }
 #include <stdio.h>
 #include <string.h>
 int	main()
 {
 	int fd = open("foo.txt", O_CREAT);
-	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
