@@ -6,103 +6,74 @@
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:40:24 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/24 22:25:51 by ted-dafi         ###   ########.fr       */
+/*   Updated: 2021/11/27 00:01:40 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <fcntl.h>
 
-char	*ft_substr(char *fr, char *start, size_t len)
+size_t	ft_strlen(const char *s)
 {
-	char	*p;
 	size_t	i;
 
 	i = 0;
-	p = (char *)malloc((len + 1) * sizeof(char));
-	if (!p)
-		return (NULL);
-	while (*start && len)
-	{
-		p[i] = *start;
+	while (s[i])
 		i++;
-		start++;
-		len--;
-	}
-	p[i] = '\0';
-	return (p);
+	return (i);
 }
-char *just_do_it(int fd, char **b, char *line)
-{
-	char	*i;
-	char	*f;
-	int		re;
 
-	line = ft_strjoin(line, *b);
-	re = read(fd, *b, BUFFER_SIZE);
-	if (re)
-		(*b)[re] = '\0';
-	line = ft_strjoin(line, *b);
-	i = ft_strchr(*b, '\n');
-	while(re && !i)
-	{
-		re = read(fd, *b, BUFFER_SIZE);
-		if (re)
-			(*b)[re] = '\0';
-		i = ft_strchr(*b, '\n');
-		line = ft_strjoin(line, *b);
-	}
-	if(i)
-	{
-		f = ft_substr(line, line, ft_strchr(line, '\n') - line);
-		ft_strlcpy(*b, i + 1,  ft_strchr(*b, '\0') - i);
-		free(line);
-		return (f);
-	}
-	else
-		*b = NULL;
-		return(line);
+char *final(int re, char *b, char *line, char *temp)
+{
+		if(re < 0 || (!re && !b))
+			return (NULL);
+		else
+		{
+			temp = ft_strchr(b, '\n');
+			if (temp)
+			{
+				temp = ft_substr(temp + 1, (&b[ft_strlen(b)] - temp) + 1);
+				line = ft_substr(b, temp - b + 2);
+				free(b);
+				b = temp;
+				return (line);
+			}
+			else
+				return (b);
+		}
 }
-char *get_next_line(int fd)
+
+char	*get_next_line(int fd)
 {
 	static char	*b;
 	char		*line;
+	char		*temp;
 	int			re;
-	char		*m;
-	char		*n;
-	char		*f;
 
-	if(fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	line = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+	line = (char *)ft_calloc(BUFFER_SIZE, sizeof(char));
 	if (!line)
-		return  (NULL);	
+		return (NULL);
 	re = read(fd, line, BUFFER_SIZE);
-	line = ft_strjoin(b, line);
-	while (re || *b)
+	while(re)
 	{
-		if (b)
-			m = ft_strchr(b, '\n');
-		if(m)
-		{
-			f = ft_substr(line, line, ft_strchr(line, '\n') - line + 1);
-			b = ft_substr(line, ft_strchr(line, '\n'), ft_strchr(line, '\0') - ft_strchr(line, '\n') + 1);
-			return (f);
-		}
+		if (!b)
+			b = ft_strdup(line);
 		else
 		{
-			re = read(fd, line, BUFFER_SIZE);
-			line = ft_strjoin(b, line);
+			temp = ft_strjoin(b, line);
+			free(b);
+			b = temp;
 		}
+		if(ft_strchr(b, '\n'))
+			break;
 	}
-	return (f);
+	return (final(re, b, line, temp));
 }
-#include <stdio.h>
-#include <string.h>
+
 int	main()
 {
-	int fd = open("foo.txt", O_CREAT);
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
+	int	fd = open("foo.txt", O_CREAT | O_RDONLY);
 	printf("%s", get_next_line(fd));
 }
