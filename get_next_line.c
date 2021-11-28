@@ -6,7 +6,7 @@
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:40:24 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/28 16:12:47 by ted-dafi         ###   ########.fr       */
+/*   Updated: 2021/11/28 18:58:44 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,40 +52,25 @@ void	final(char **line, char **buff)
 char	*get_next_line(int fd)
 {
 	static char	*buff;
-	char		*temp;
+	char		temp[BUFFER_SIZE + 1];
 	char		*line;
 	int			re;
 
 	re = 1;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	temp = (char *)ft_calloc(BUFFER_SIZE + 1, sizeof(char));
-	if (!temp)
-		return (NULL);
+	if (!buff)
+		buff = ft_strdup("");
 	while(re > 0 && ft_newlchr(buff) < 0)
 	{
 		re = read(fd, temp, BUFFER_SIZE);
 		if (re < 0)
-			return (my_free(&temp));
-		if (re)
-			buff = ft_strjoin(buff, temp);
+			return (my_free(&buff));
+		temp[re] = '\0';
+		buff = ft_strjoin(&buff, temp);
 	}
 	final(&line, &buff);
-	my_free(&temp);
 	if (ft_strlen(line) == 0)
 		my_free(&line);
 	return (line);
-}
-#include <stdio.h>
-int	main()
-{
-	int	fd = open("foo.txt", O_CREAT | O_RDONLY);
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
 }

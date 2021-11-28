@@ -6,7 +6,7 @@
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:32:55 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/28 15:44:45 by ted-dafi         ###   ########.fr       */
+/*   Updated: 2021/11/28 18:24:00 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	*ft_calloc(size_t count, size_t size)
 	if (b == 0)
 		return (0);
 	while(i)
-		((char *)b)[i--] = 0;
+		((char *)b)[--i] = 0;
 	return (b);
 }
 
@@ -71,23 +71,23 @@ char	*ft_strdup(const char *s1)
 	return (bo);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin(char **s1, char *s2)
 {
 	char		*s3;
 	size_t		i;
 	size_t		j;
 
-	if (!s1)
-		s1 = ft_strdup("");
+	if (!(*s1))
+		return (ft_strdup(s2));
 	i = 0;
-	j  =0;
-	s3 = (char *)ft_calloc(ft_strlen(s1) + ft_strlen(s2) + 1, sizeof(char));
+	j = 0;
+	s3 = (char *)ft_calloc(ft_strlen(*s1) + ft_strlen(s2) + 1, sizeof(char));
 	if (!s3)
 		return (NULL);
-	while(s1[i])
-		s3[j++] = s1[i++];
+	while(s1[0][i])
+		s3[j++] = s1[0][i++];
 	i = 0;
-	free(s1);
+	my_free(s1);
 	while(s2[i])
 		s3[j++] = s2[i++];
 	return (s3);
