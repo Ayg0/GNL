@@ -6,7 +6,7 @@
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:32:55 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/27 00:00:25 by ted-dafi         ###   ########.fr       */
+/*   Updated: 2021/11/28 15:44:45 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,24 @@ void	*ft_calloc(size_t count, size_t size)
 	return (b);
 }
 
-char	*ft_substr(char const *s, size_t len)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char	*p;
 	size_t	i;
+	size_t	c;
 
 	i = 0;
 	if (!s)
 		return (NULL);
+	c = ft_strlen(s + start);
+	if (len > c)
+		len = c;
 	p = (char *)ft_calloc((len + 1), sizeof(char));
 	if (!p)
 		return (NULL);
-	while (*s && len)
+	while (*(s + start) && len)
 	{
-		p[i] = *s;
+		p[i] = *(s + start);
 		i++;
 		s++;
 		len--;
@@ -52,6 +56,8 @@ char	*ft_strdup(const char *s1)
 	size_t		i;
 	char		*bo;
 
+	if (!s1)
+		return (ft_strdup(""));
 	i = ft_strlen(s1);
 	bo = (char *)ft_calloc(i + 1, sizeof(char));
 	if (bo == 0)
@@ -71,8 +77,8 @@ char	*ft_strjoin(char *s1, char *s2)
 	size_t		i;
 	size_t		j;
 
-	if (!s1 || !s2)
-		return (NULL);
+	if (!s1)
+		s1 = ft_strdup("");
 	i = 0;
 	j  =0;
 	s3 = (char *)ft_calloc(ft_strlen(s1) + ft_strlen(s2) + 1, sizeof(char));
@@ -81,20 +87,24 @@ char	*ft_strjoin(char *s1, char *s2)
 	while(s1[i])
 		s3[j++] = s1[i++];
 	i = 0;
+	free(s1);
 	while(s2[i])
 		s3[j++] = s2[i++];
 	return (s3);
 }
 
-char	*ft_strchr(const char *s, int c)
+int	ft_newlchr(const char *s)
 {
-	while (*s)
+	int	i;
+
+	i = 0;
+	if (!s)
+		return (-1);
+	while(s[i])
 	{
-		if (*s == (char )c)
-			return ((char *)s);
-		s++;
+		if(s[i] == '\n')
+			return (i);
+		i++;
 	}
-	if ((char )c == '\0')
-		return ((char *)s);
-	return (0);
+	return (-1);
 }

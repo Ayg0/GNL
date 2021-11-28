@@ -6,7 +6,7 @@
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:40:24 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/27 00:01:40 by ted-dafi         ###   ########.fr       */
+/*   Updated: 2021/11/28 16:12:47 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,58 +22,70 @@ size_t	ft_strlen(const char *s)
 		i++;
 	return (i);
 }
-
-char *final(int re, char *b, char *line, char *temp)
+char	*my_free(char **buff)
 {
-		if(re < 0 || (!re && !b))
-			return (NULL);
-		else
-		{
-			temp = ft_strchr(b, '\n');
-			if (temp)
-			{
-				temp = ft_substr(temp + 1, (&b[ft_strlen(b)] - temp) + 1);
-				line = ft_substr(b, temp - b + 2);
-				free(b);
-				b = temp;
-				return (line);
-			}
-			else
-				return (b);
-		}
+	free(*buff);
+	*buff = NULL;
+	return(NULL);
+}
+
+void	final(char **line, char **buff)
+{
+	char	*temp;
+	int		i;
+
+	i = ft_newlchr(*buff);
+	if (i >= 0)
+	{
+		*line = ft_substr(*buff, 0, i + 1);
+		temp = *buff;
+		*buff = ft_substr(*buff, i + 1, ft_strlen(*buff));
+		my_free(&temp);
+	}
+	else
+	{
+		*line = ft_strdup(*buff);
+		my_free(buff);	
+	}
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*b;
-	char		*line;
+	static char	*buff;
 	char		*temp;
+	char		*line;
 	int			re;
 
+	re = 1;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	line = (char *)ft_calloc(BUFFER_SIZE, sizeof(char));
-	if (!line)
+	temp = (char *)ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	if (!temp)
 		return (NULL);
-	re = read(fd, line, BUFFER_SIZE);
-	while(re)
+	while(re > 0 && ft_newlchr(buff) < 0)
 	{
-		if (!b)
-			b = ft_strdup(line);
-		else
-		{
-			temp = ft_strjoin(b, line);
-			free(b);
-			b = temp;
-		}
-		if(ft_strchr(b, '\n'))
-			break;
+		re = read(fd, temp, BUFFER_SIZE);
+		if (re < 0)
+			return (my_free(&temp));
+		if (re)
+			buff = ft_strjoin(buff, temp);
 	}
-	return (final(re, b, line, temp));
+	final(&line, &buff);
+	my_free(&temp);
+	if (ft_strlen(line) == 0)
+		my_free(&line);
+	return (line);
 }
-
+#include <stdio.h>
 int	main()
 {
 	int	fd = open("foo.txt", O_CREAT | O_RDONLY);
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 }
