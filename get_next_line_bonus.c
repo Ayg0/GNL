@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ted-dafi <ted-dafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/28 20:29:45 by ted-dafi          #+#    #+#             */
-/*   Updated: 2021/11/29 13:19:58 by ted-dafi         ###   ########.fr       */
+/*   Created: 2021/11/28 20:52:52 by ted-dafi          #+#    #+#             */
+/*   Updated: 2021/11/29 13:20:23 by ted-dafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-#include <fcntl.h>
+#include "get_next_line_bonus.h"
 
 size_t	ft_strlen(const char *s)
 {
@@ -65,7 +64,7 @@ void	final(char **line, char **buff)
 
 char	*get_next_line(int fd)
 {
-	static char	*buff;
+	static char	*buff[1024];
 	char		*temp;
 	char		*line;
 	int			re;
@@ -76,17 +75,17 @@ char	*get_next_line(int fd)
 	temp = (char *)ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!temp)
 		return (NULL);
-	if (!buff)
-		buff = ft_strdup("");
-	while (re > 0 && ft_newlchr(buff) < 0)
+	if (!buff[fd])
+		buff[fd] = ft_strdup("");
+	while (re > 0 && ft_newlchr(buff[fd]) < 0)
 	{
 		re = read(fd, temp, BUFFER_SIZE);
 		if (re < 0)
-			return (my_free(&buff, &temp, 0));
+			return (my_free(&buff[fd], &temp, 0));
 		temp[re] = '\0';
-		buff = ft_strjoin(&buff, temp);
+		buff[fd] = ft_strjoin(&buff[fd], temp);
 	}
-	final(&line, &buff);
+	final(&line, &buff[fd]);
 	my_free(&line, &temp, 1);
 	return (line);
 }
